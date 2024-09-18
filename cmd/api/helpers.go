@@ -96,7 +96,7 @@ func (app *Config) getToken(r *http.Request) (jsonResponse, error) {
 
 	}
 
-	// Set the "Authorization" header with your Bearer token
+	// Set the "Authorization" header with your Bearer token,
 	request.Header.Set("authorization", authorizationHeader)
 
 	// Set the Content-Type header
