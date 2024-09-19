@@ -24,7 +24,7 @@ func (app *Config) routes() http.Handler {
 
 	mux.Use(middleware.Heartbeat("/ping"))
 	mux.Post("/api/v1/authentication/signup", app.Signup)
-	// mux.Post("/api/v1/authentication/login", app.Login)
+	mux.Post("/api/v1/authentication/login", app.Login)
 	// mux.Get("/api/v1/authentication/get-me", app.GetMe)
 	// mux.Get("/api/v1/authentication/verify-token", app.VerifyToken)
 	// mux.Post("/api/v1/authentication/log-out", app.Logout)
