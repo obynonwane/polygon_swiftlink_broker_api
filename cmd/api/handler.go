@@ -10,14 +10,6 @@ import (
 	"os"
 )
 
-type MailPayload struct {
-	From    string                 `json:"from"`
-	To      string                 `json:"to"`
-	Subject string                 `json:"subject"`
-	Message string                 `json:"message"`
-	Data    map[string]interface{} `json:"data"`
-}
-
 type SignupPayload struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -31,11 +23,6 @@ type LoginPayload struct {
 	Password string `json:"password" validate:"required"`
 }
 
-type AssignPermissionPayload struct {
-	UserID       string `json:"user_id"`
-	PermissionID string `json:"permission_id"`
-}
-
 func (app *Config) Signup(w http.ResponseWriter, r *http.Request) {
 
 	//extract the request body
@@ -44,12 +31,14 @@ func (app *Config) Signup(w http.ResponseWriter, r *http.Request) {
 	//extract the requestbody
 	err := app.readJSON(w, r, &requestPayload)
 	if err != nil {
+		log.Println(err)
 		app.errorJSON(w, err, nil)
 		return
 	}
 
 	// Validate the request payload
 	if err := app.ValidataSignupInput(requestPayload); len(err) > 0 {
+		log.Println(err)
 		app.errorJSON(w, errors.New("error trying to sign-up user"), err, http.StatusBadRequest)
 		return
 	}
@@ -58,6 +47,8 @@ func (app *Config) Signup(w http.ResponseWriter, r *http.Request) {
 	jsonData, _ := json.MarshalIndent(requestPayload, "", "\t")
 
 	authServiceUrl := fmt.Sprintf("%s%s", os.Getenv("AUTH_URL"), "signup")
+
+	log.Println(authServiceUrl)
 
 	// call the service by creating a request
 	request, err := http.NewRequest("POST", authServiceUrl, bytes.NewBuffer(jsonData))
