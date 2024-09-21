@@ -162,6 +162,116 @@ func (app *Config) Login(w http.ResponseWriter, r *http.Request) {
 
 	app.writeJSON(w, http.StatusOK, payload)
 }
+
+func (app *Config) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+
+	result, err := app.getUserToken(w, r)
+	if err != nil {
+		app.errorJSON(w, errors.New(result.Message), nil)
+		return
+	}
+	if result.Error {
+		app.errorJSON(w, errors.New(result.Message), result.Data)
+		return
+	}
+	// call the service by creating a request
+	request, err := http.NewRequest("GET", os.Getenv("AUTH_URL")+"all-users", nil)
+
+	if err != nil {
+		app.errorJSON(w, err, nil)
+		return
+	}
+
+	// Set the Content-Type header
+	request.Header.Set("Content-Type", "application/json")
+	//create a http client
+	client := &http.Client{}
+	response, err := client.Do(request)
+
+	if err != nil {
+		app.errorJSON(w, err, nil)
+		return
+	}
+	defer response.Body.Close()
+
+	// create a variable that 'll read response.Body into
+	var jsonFromService jsonResponse
+
+	// decode the json from the auth service
+	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
+	if err != nil {
+		app.errorJSON(w, err, nil)
+		return
+	}
+
+	//check the status of the response
+	if response.StatusCode != http.StatusAccepted {
+		app.errorJSON(w, errors.New(jsonFromService.Message), nil)
+		return
+	}
+
+	if jsonFromService.Error {
+		app.errorJSON(w, err, nil, http.StatusUnauthorized)
+		return
+	}
+
+	var payload jsonResponse
+	payload.Error = jsonFromService.Error
+	payload.StatusCode = http.StatusOK
+	payload.Message = jsonFromService.Message
+	payload.Data = jsonFromService.Data
+
+	app.writeJSON(w, http.StatusOK, payload)
+}
+
+func (app *Config) getUserToken(w http.ResponseWriter, r *http.Request) (jsonResponse, error) {
+	//get authorization hearder
+	authorizationHeader := r.Header.Get("Authorization")
+
+	// call the service by creating a request
+	request, err := http.NewRequest("GET", os.Getenv("AUTH_URL")+"verify-user-token", nil)
+
+	if err != nil {
+		return jsonResponse{Error: true, Message: err.Error(), StatusCode: http.StatusBadRequest, Data: nil}, err
+
+	}
+
+	// Set the "Authorization" header with your Bearer token
+	request.Header.Set("authorization", authorizationHeader)
+
+	// Set the Content-Type header
+	request.Header.Set("Content-Type", "application/json")
+	//create a http client
+	client := &http.Client{}
+	response, err := client.Do(request)
+
+	if err != nil {
+		return jsonResponse{Error: true, Message: err.Error(), StatusCode: http.StatusBadRequest, Data: nil}, err
+
+	}
+	defer response.Body.Close()
+
+	//variable to marshal into
+	var jsonFromService jsonResponse
+
+	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
+	if err != nil {
+		return jsonResponse{Error: true, Message: err.Error(), StatusCode: http.StatusBadRequest, Data: nil}, err
+	}
+
+	// make a call to the bank-service
+	var payload jsonResponse
+	payload.Error = jsonFromService.Error
+	payload.Message = jsonFromService.Message
+	payload.StatusCode = response.StatusCode
+	payload.Data = jsonFromService.Data
+
+	if jsonFromService.Error {
+		return payload, err
+	}
+
+	return payload, nil
+}
 func (app *Config) GetMe()       {}
 func (app *Config) VerifyToken() {}
 func (app *Config) Logout()      {}
