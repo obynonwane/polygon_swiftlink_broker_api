@@ -1,6 +1,4 @@
-
-# base go image - for production 
-FROM --platform=linux/amd64 alpine:latest
+FROM alpine:latest
 
 RUN mkdir /app
 

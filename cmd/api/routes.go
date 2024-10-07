@@ -26,6 +26,15 @@ func (app *Config) routes() http.Handler {
 	mux.Post("/api/v1/authentication/signup", app.Signup)
 	mux.Post("/api/v1/authentication/login", app.Login)
 	mux.Get("/api/v1/authentication/all-users", app.GetAllUsers)
+
+	//POS Mainnet & Testnet: Missed Checkpoint
+	mux.Get("/api/v1/pos/mainnet/mainnet-missed-checkpoint", app.MainnetMissedCheckpoint)
+	mux.Get("/api/v1/pos/testnet/mainnet-missed-checkpoint", app.TestnetMissedCheckpoint)
+
+	//POS Mainnet &Testnet: Heimdall Block Height
+	mux.Get("/api/v1/pos/mainnet/heimdal-block-height", app.MainnetHeimdalBlockHeight)
+	mux.Get("/api/v1/pos/testnet/heimdal-block-height", app.TestnetHeimdalBlockHeight)
+
 	// mux.Get("/api/v1/authentication/get-me", app.GetMe)
 	// mux.Get("/api/v1/authentication/verify-token", app.VerifyToken)
 	// mux.Post("/api/v1/authentication/log-out", app.Logout)
