@@ -39,6 +39,10 @@ func (app *Config) routes() http.Handler {
 	mux.Get("/api/v1/pos/mainnet/bor-latest-block-details", app.MainnetBorLatestBlockDetails)
 	mux.Get("/api/v1/pos/testnet/bor-latest-block-details", app.TestnetBorLatestBlockDetails)
 
+	//POS Mainnet &Testnet: State Sync
+	mux.Get("/api/v1/pos/mainnet/state-sync", app.MainnetStateSync)
+	mux.Get("/api/v1/pos/testnet/state-sync", app.TestnetStateSync)
+
 	// mux.Get("/api/v1/authentication/get-me", app.GetMe)
 	// mux.Get("/api/v1/authentication/verify-token", app.VerifyToken)
 	// mux.Post("/api/v1/authentication/log-out", app.Logout)

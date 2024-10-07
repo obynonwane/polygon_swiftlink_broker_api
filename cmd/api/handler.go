@@ -587,3 +587,123 @@ func (app *Config) TestnetBorLatestBlockDetails(w http.ResponseWriter, r *http.R
 
 	app.writeJSON(w, http.StatusOK, payload)
 }
+func (app *Config) MainnetStateSync(w http.ResponseWriter, r *http.Request) {
+
+	result, err := app.getUserToken(w, r)
+	if err != nil {
+		app.errorJSON(w, errors.New(result.Message), nil)
+		return
+	}
+	if result.Error {
+		app.errorJSON(w, errors.New(result.Message), result.Data)
+		return
+	}
+	// call the service by creating a request
+	request, err := http.NewRequest("GET", os.Getenv("SERVICE_URL")+"pos/mainnet/state-sync", nil)
+
+	if err != nil {
+		app.errorJSON(w, err, nil)
+		return
+	}
+
+	// Set the Content-Type header
+	request.Header.Set("Content-Type", "application/json")
+	//create a http client
+	client := &http.Client{}
+	response, err := client.Do(request)
+
+	if err != nil {
+		app.errorJSON(w, err, nil)
+		return
+	}
+	defer response.Body.Close()
+
+	// create a variable that 'll read response.Body into
+	var jsonFromService jsonResponse
+
+	// decode the json from the auth service
+	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
+	if err != nil {
+		app.errorJSON(w, err, nil)
+		return
+	}
+
+	//check the status of the response
+	if response.StatusCode != http.StatusAccepted {
+		app.errorJSON(w, errors.New(jsonFromService.Message), nil)
+		return
+	}
+
+	if jsonFromService.Error {
+		app.errorJSON(w, err, nil, http.StatusUnauthorized)
+		return
+	}
+
+	var payload jsonResponse
+	payload.Error = jsonFromService.Error
+	payload.StatusCode = http.StatusOK
+	payload.Message = jsonFromService.Message
+	payload.Data = jsonFromService.Data
+
+	app.writeJSON(w, http.StatusOK, payload)
+}
+func (app *Config) TestnetStateSync(w http.ResponseWriter, r *http.Request) {
+
+	result, err := app.getUserToken(w, r)
+	if err != nil {
+		app.errorJSON(w, errors.New(result.Message), nil)
+		return
+	}
+	if result.Error {
+		app.errorJSON(w, errors.New(result.Message), result.Data)
+		return
+	}
+	// call the service by creating a request
+	request, err := http.NewRequest("GET", os.Getenv("SERVICE_URL")+"pos/testnet/state-sync", nil)
+
+	if err != nil {
+		app.errorJSON(w, err, nil)
+		return
+	}
+
+	// Set the Content-Type header
+	request.Header.Set("Content-Type", "application/json")
+	//create a http client
+	client := &http.Client{}
+	response, err := client.Do(request)
+
+	if err != nil {
+		app.errorJSON(w, err, nil)
+		return
+	}
+	defer response.Body.Close()
+
+	// create a variable that 'll read response.Body into
+	var jsonFromService jsonResponse
+
+	// decode the json from the auth service
+	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
+	if err != nil {
+		app.errorJSON(w, err, nil)
+		return
+	}
+
+	//check the status of the response
+	if response.StatusCode != http.StatusAccepted {
+		app.errorJSON(w, errors.New(jsonFromService.Message), nil)
+		return
+	}
+
+	if jsonFromService.Error {
+		app.errorJSON(w, err, nil, http.StatusUnauthorized)
+		return
+	}
+
+	var payload jsonResponse
+	payload.Error = jsonFromService.Error
+	payload.StatusCode = http.StatusOK
+	payload.Message = jsonFromService.Message
+	payload.Data = jsonFromService.Data
+
+	app.writeJSON(w, http.StatusOK, payload)
+}
