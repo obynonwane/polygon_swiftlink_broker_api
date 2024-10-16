@@ -299,7 +299,7 @@ func (app *Config) TestnetMissedCheckpoint(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	// call the service by creating a request
-	request, err := http.NewRequest("GET", os.Getenv("SERVICE_URL")+"pos/testnet/mainnet-missed-checkpoint", nil)
+	request, err := http.NewRequest("GET", os.Getenv("SERVICE_URL")+"pos/testnet/testnet-missed-checkpoint", nil)
 
 	if err != nil {
 		app.errorJSON(w, err, nil)
