@@ -119,7 +119,6 @@ func (app *Config) Login(w http.ResponseWriter, r *http.Request) {
 	// call the service by creating a request
 	request, err := http.NewRequest("POST", os.Getenv("AUTH_URL")+"login", bytes.NewBuffer(jsonData))
 
-	log.Println("reached the handler in broker for login")
 	if err != nil {
 		app.errorJSON(w, err, nil)
 		return

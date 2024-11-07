@@ -51,9 +51,9 @@ func (app *Config) ValidataSignupInput(req SignupPayload) map[string]string {
 		errors["email"] = fmt.Sprintf("%s is required", "email")
 	}
 
-	if !isEmailValid(req.Email) {
-		errors["email"] = fmt.Sprintf("%s supplied is invalid", "email")
-	}
+	// if !isEmailValid(req.Email) {
+	// 	errors["email"] = fmt.Sprintf("%s supplied is invalid", "email")
+	// }
 
 	return errors
 }

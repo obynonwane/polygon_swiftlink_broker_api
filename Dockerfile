@@ -1,4 +1,5 @@
-FROM alpine:latest
+# FROM alpine:latest
+FROM --platform=linux/amd64 alpine:latest
 
 RUN mkdir /app
 
